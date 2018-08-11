@@ -1,5 +1,5 @@
 ;
-;   READDATA.ASM
+;   DDX80reg
 ;   pasmo -d -v ddx80reg.asm ddx80reg.bin
 ;
 include "../library/msx1bios.asm"
