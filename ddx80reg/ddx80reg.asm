@@ -1,5 +1,5 @@
 ;
-;   DDX80reg
+;   DDX80reg versão 0.1
 ;   pasmo -d -v ddx80reg.asm ddx80reg.bin
 ;
 include "../library/msx1bios.asm"
@@ -20,10 +20,9 @@ else
     screenAddr: equ $6000
 endif
 
-slotID:     equ 2                       ; SLOT-2
 
 ;
-;   Configura automáticamente os DEF USR<n> do MSX-BASIC.
+;   Configura automaticamente os DEF USR<n> do MSX-BASIC.
 ;
 macro   ____defUser, index, address
             ld hl, address
@@ -36,11 +35,14 @@ macro   ____defUser, index, address
             dw	stop
             dw	exec
 start:
+;
+;   área de trabalho
+;
 mc6845RegTable:
             ds 16, $00
 
 ;
-;            o VMX-80 inicializa com valores um pouco diferentes
+;   valores padrão
 ;
 mc6845Registers:
             db 0x71                     ; Horizontal Total = 113
@@ -66,6 +68,9 @@ mc6845reg:
 mc6845value:
             db 0                        ; valor a ser utilizado
 
+slotID:                                 ; identificação do slot onde o
+            db 2                        ; cartão de 80 colunas está
+                                        ; conectado.
 exec:
             proc
         ____defUser "0", resetRegisters
@@ -160,14 +165,14 @@ updateRegister:
             ld a,(mc6845reg)            ; lê o registrador a alterar
             ld e,a                      ; coloca em 'E'
 
-            ld a,slotID                 ; localização da DDX80
+            ld a,(slotID)               ; localização da DDX80
             ld hl,indexReg              ; índide do registrador
             call WRSLT                  ; escreve na RAM do cartucho
 
             ld a,(mc6845value)          ; valor a ser escrito
             ld e,a                      ; coloca em 'E'
 
-            ld a,slotID                 ; localização da DDX80
+            ld a,(slotID)               ; localização da DDX80
             ld hl,dataReg               ; valor do registrador
             call WRSLT                  ; escreve na RAM do cartucho
 
@@ -188,7 +193,7 @@ printCharset:
 printCharset0:
             push bc                     ; salva 'BC'
 
-            ld a,slotID                 ; localização da DDX80
+            ld a,(slotID)               ; localização da DDX80
             call WRSLT                  ; escreve na RAM do cartucho
 
             inc e                       ; incrementa valor ASCII
